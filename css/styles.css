@@ -1,0 +1,62 @@
+:root {
+    
+}
+
+* {
+    border: 1px solid red;
+}
+
+gameArea {
+    display: grid;
+    grid-template-columns: minmax(50px, 1fr) minmax(200px, 4fr) minmax(50px, 1fr);
+    grid-template-rows: minmax(50px, 15vh) minmax(300px, 60vh) minmax(50px, 15vh);
+    grid-template-areas: 
+        "leftHeader header rightHeader"
+        "leftPanel board rightPanel"
+        "leftFooter footer rightFooter";
+    text-align: center;
+}
+
+li:nth-child(2n) {
+    font-weight: 600;
+}
+
+li:nth-child(2n-1) {
+    font-style: italic;
+}
+
+leftHeader {
+    grid-area: leftHeader;
+}
+
+header {
+    grid-area: header;
+}
+
+rightHeader {
+    grid-area: rightHeader;
+}
+
+left {
+    grid-area: leftPanel;
+}
+
+board {
+    grid-area: board;
+}
+
+right {
+    grid-area: rightPanel;
+}
+
+leftFooter {
+    grid-area: leftFooter;
+}
+
+footer {
+    grid-area: footer;
+}
+
+rightFooter {
+    grid-area: rightFooter;
+}
