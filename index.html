@@ -11,31 +11,64 @@
 
 <body>
     <main>
-        <header>The 3-Kins</header>
+        <gameArea class="container">
 
-        <left>
-            <title></title>
-            <ul>
-                <li>Evens numbers:</li>
-                <li>2, 4, 6, 8</li>
-                <li>Odd numbers:</li>
-                <li>1, 3, 5, 7, 9</li>
-                <li>Factors of 6:</li>
-                <li>1, 2, 3, 6</li>
-                <li>Factors of 8:</li>
-                <li>1, 2, 4, 8</li>
-                <li>Factors of 9</li>
-                <li>1, 3, 9</li>
-            </ul>
-        </left>
-
-        <grid></grid>
-
-        <right></right>
         
-        <bottom></bottom>
+            <top class="row">
 
-        <footer></footer>
+                <leftHeader class="col-sm-2">
+                    A TLC Game
+                </leftHeader>
+
+                <header class="col-lg-8">The 3-Kins</header>
+
+                <rightHeader class="col-sm-2">Phase 1: Select pieces.</rightHeader>
+
+            </top>
+
+            <gamePanel class="row">
+
+            <left class="col-sm-2">
+                <ul class="list-unstyled">
+                    <li>Evens numbers:</li>
+                    <li>2, 4, 6, 8</li>
+                    <li>Odd numbers:</li>
+                    <li>1, 3, 5, 7, 9</li>
+                    <li>Factors of 6:</li>
+                    <li>1, 2, 3, 6</li>
+                    <li>Factors of 8:</li>
+                    <li>1, 2, 4, 8</li>
+                    <li>Factors of 9</li>
+                    <li>1, 3, 9</li>
+                </ul>
+            </left>
+
+            <board class="col-lg-8">Game Board goes here.</board>
+
+            <right class="col-sm-2">
+                <ul class="list-unstyled">
+                    <li>Multiples of 3:</li>
+                    <li>3, 6, 9</li>
+                    <li>Perfect squares:</li>
+                    <li>1, 4, 9</li>
+                    <li>Prime numbers:</li>
+                    <li>2, 3, 5, 7</li>
+                    <li>Sums:</li>
+                    <li>a + b = c</li>
+                    <li>(e.g. 2 + 3 = 5)</li>
+                </ul>
+            </right>
+
+        </gamePanel>
+
+        <tray class="row">
+            <leftFooter class="col-sm-2">Info</leftFooter>
+            
+            <footer class="col-sm-8">Game pieces go here</footer>
+
+            <rightFooter class="col-sm-2">Score</rightFooter>
+        </tray>
+        </gameArea>
     </main>
 </body>
 
