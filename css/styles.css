@@ -1,9 +1,13 @@
 :root {
-    
+    --boardCircleHeight: 4vh;
+    --boardCircleWidth: 4vw;
+    --neutral: darkgreen;
+    --player1: darkblue;
+    --player2: darkred;
 }
 
 * {
-    border: 1px solid red;
+    border: 1px solid darkolivegreen;
 }
 
 gameArea {
@@ -16,6 +20,74 @@ gameArea {
         "leftFooter footer rightFooter";
     text-align: center;
 }
+
+board {
+    display: grid;
+    grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+    
+}
+
+
+#slot1, #slot2, #slot3, #slot4, #slot5, #slot6, #slot7, #slot8, #slot9 {
+    position: relative;
+    top: calc(50% - (var(--boardCircleHeight) + var(--boardCircleWidth))/2);
+    left: calc(50% - (var(--boardCircleHeight) + var(--boardCircleWidth))/2);
+    width: calc(var(--boardCircleHeight) + var(--boardCircleWidth));
+    height: calc(var(--boardCircleHeight) + var(--boardCircleWidth));
+    background-color: var(--neutral);
+    border-radius: 50%;
+}
+
+/* Horizontal connector lines */
+#slot1::after,#slot4::after,#slot7::after {
+    content: "";
+    position: absolute;
+    left: var(--boardCircleWidth);
+    top: calc(50% - 0.5vh);
+    width: calc(var(--boardCircleWidth) * 11);
+    height: 1vh;
+    background-color: darkgoldenrod;
+    z-index: -1;
+}
+
+/* Vertical connector lines */
+#slot7::before, #slot8::before, #slot9::before {
+    content: "";
+    position: absolute;
+    left: calc((var(--boardCircleHeight) + var(--boardCircleWidth)) / 2 - 0.25vw);
+    top: -36vh;
+    height: calc(var(--boardCircleHeight) * 10);
+    width: 1vh;
+    background-color: darkgoldenrod;
+    z-index: -1;
+}
+
+/* Diagonal connectors */
+#slot4::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--boardCircleWidth) * -0.2);
+    top: calc(50% - 0.5vh);
+    width: calc(var(--boardCircleWidth) * 13.5);
+    height: 1vh;
+    background-color: darkgoldenrod;
+    z-index: -1;
+    transform-origin: center;
+    transform: rotate(34deg);
+}
+#slot6::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--boardCircleWidth) * -11.25);
+    top: calc(50% + 0.2vh);
+    width: calc(var(--boardCircleWidth) * 13.5);
+    height: 1vh;
+    background-color: darkgoldenrod;
+    z-index: -1;
+    transform-origin: center;
+    transform: rotate(-34deg);
+}
+
 
 li:nth-child(2n) {
     font-weight: 600;
