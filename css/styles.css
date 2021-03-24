@@ -2,8 +2,19 @@
     --boardCircleHeight: 4vh;
     --boardCircleWidth: 4vw;
     --neutral: darkgreen;
+    --neutralLight: green;
+    --neutralLighter: lightgreen;
     --player1: darkblue;
+    --player1Light: blue;
+    --player1Lighter: lightblue;
     --player2: darkred;
+    --player2Light: red;
+    --player2Lighter: pink;
+    --bgNeutral: radial-gradient(circle at 55% 30%, var(--neutralLight) 8%, var(--neutral) 50%, var(--neutralLight) 90%, var(--neutralLighter) 100%);
+    --bgPlayer1: radial-gradient(circle at 55% 30%, var(--player1Light) 8%, var(--player1) 50%, var(--player1Light) 90%, var(--player1Lighter) 100%);
+    --bgPlayer2: radial-gradient(circle at 55% 30%, var(--player2Light) 8%, var(--player2) 50%, var(--player2Light) 90%, var(--player2Lighter) 100%);
+    --trayCircleHeight: 3vh;
+    --trayCircleWidth: calc(2vw + 20px);
 }
 
 * {
@@ -30,15 +41,34 @@ board {
     linear-gradient(to bottom right, rgba(255,255,255,0) 49.3%, darkgoldenrod 49.5%, darkgoldenrod 50.5%, rgba(255,255,255,0) 50.7%);
 }
 
+#tray {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    align-items: center;
+    justify-items: center;
+}
+
+board > div, footer > div {
+    position: relative;
+    padding-top: 3%;
+    color: lightyellow;
+    border-radius: 50%;
+    background: var(--bgNeutral);
+}
+
+#tray1, #tray2, #tray3, #tray4, #tray5, #tray6, #tray7, #tray8 {
+    width: var(--trayCircleWidth);
+    height: var(--trayCircleWidth);
+    font-size: calc(var(--trayCircleWidth)/2);
+}
 
 #slot1, #slot2, #slot3, #slot4, #slot5, #slot6, #slot7, #slot8, #slot9 {
-    position: relative;
+    font-size: calc((var(--boardCircleHeight) + var(--boardCircleWidth))/2);
     top: calc(50% - (var(--boardCircleHeight) + var(--boardCircleWidth))/2);
     left: calc(50% - (var(--boardCircleHeight) + var(--boardCircleWidth))/2);
     width: calc(var(--boardCircleHeight) + var(--boardCircleWidth));
     height: calc(var(--boardCircleHeight) + var(--boardCircleWidth));
-    background-color: var(--neutral);
-    border-radius: 50%;
 }
 
 /* Horizontal connector lines */
@@ -50,6 +80,7 @@ board {
     width: calc(var(--boardCircleWidth) * 11);
     height: 1vh;
     background-color: darkgoldenrod;
+    background: linear-gradient(gold 0%, darkgoldenrod 20%, darkgoldenrod 80%, gold 100%);
     z-index: -1;
 }
 
@@ -57,40 +88,14 @@ board {
 #slot7::before, #slot8::before, #slot9::before {
     content: "";
     position: absolute;
-    left: calc((var(--boardCircleHeight) + var(--boardCircleWidth)) / 2 - 0.25vw);
+    left: calc((var(--boardCircleHeight) + var(--boardCircleWidth)) / 2 - 0.5vh);
     top: -36vh;
-    height: calc(var(--boardCircleHeight) * 10);
     width: 1vh;
+    height: calc(var(--boardCircleHeight) * 10);
     background-color: darkgoldenrod;
+    background: linear-gradient(to right,gold 0%, darkgoldenrod 20%, darkgoldenrod 80%, gold 100%);
     z-index: -1;
 }
-
-/* Diagonal connectors */
-/* #slot4::before {
-    content: "";
-    position: absolute;
-    left: calc(var(--boardCircleWidth) * -0.2);
-    top: calc(50% - 0.5vh);
-    width: calc(var(--boardCircleWidth) * 13.5);
-    height: 1vh;
-    background-color: darkgoldenrod;
-    z-index: -1;
-    transform-origin: center;
-    transform: rotate(34deg);
-}
-#slot6::before {
-    content: "";
-    position: absolute;
-    left: calc(var(--boardCircleWidth) * -11.25);
-    top: calc(50% + 0.2vh);
-    width: calc(var(--boardCircleWidth) * 13.5);
-    height: 1vh;
-    background-color: darkgoldenrod;
-    z-index: -1;
-    transform-origin: center;
-    transform: rotate(-34deg);
-} */
-
 
 li:nth-child(2n) {
     font-weight: 600;
