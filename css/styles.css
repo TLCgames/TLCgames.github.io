@@ -10,10 +10,12 @@
     --player2: darkred;
     --player2Light: red;
     --player2Lighter: pink;
+    --select: #66cc66;
+    --unselect: lightyellow;
     --bgNeutral: radial-gradient(circle at 55% 30%, var(--neutralLight) 8%, var(--neutral) 50%, var(--neutralLight) 90%, var(--neutralLighter) 100%);
     --bgPlayer1: radial-gradient(circle at 55% 30%, var(--player1Light) 8%, var(--player1) 50%, var(--player1Light) 90%, var(--player1Lighter) 100%);
     --bgPlayer2: radial-gradient(circle at 55% 30%, var(--player2Light) 8%, var(--player2) 50%, var(--player2Light) 90%, var(--player2Lighter) 100%);
-    --trayCircleHeight: 3vh;
+    --bgEmpty: radial-gradient(circle at 49% 51%, var(--neutral) 3%, var(--neutral) 5%, var(--neutralLight) 60%, var(--neutral) 70%);
     --trayCircleWidth: calc(2vw + 20px);
 }
 
@@ -52,18 +54,18 @@ board {
 board > div, footer > div {
     position: relative;
     padding-top: 3%;
-    color: lightyellow;
+    color: var(--unselect);
     border-radius: 50%;
-    background: var(--bgNeutral);
+    background: var(--bgEmpty);
 }
 
-#tray1, #tray2, #tray3, #tray4, #tray5, #tray6, #tray7, #tray8 {
+#tray1, #tray2, #tray3, #tray4, #tray5, #tray6, #tray7, #tray0 {
     width: var(--trayCircleWidth);
     height: var(--trayCircleWidth);
     font-size: calc(var(--trayCircleWidth)/2);
 }
 
-#slot1, #slot2, #slot3, #slot4, #slot5, #slot6, #slot7, #slot8, #slot9 {
+#slot1, #slot2, #slot3, #slot4, #slot5, #slot6, #slot7, #slot8, #slot0 {
     font-size: calc((var(--boardCircleHeight) + var(--boardCircleWidth))/2);
     top: calc(50% - (var(--boardCircleHeight) + var(--boardCircleWidth))/2);
     left: calc(50% - (var(--boardCircleHeight) + var(--boardCircleWidth))/2);
@@ -72,7 +74,7 @@ board > div, footer > div {
 }
 
 /* Horizontal connector lines */
-#slot1::after,#slot4::after,#slot7::after {
+#slot0::after,#slot3::after,#slot6::after {
     content: "";
     position: absolute;
     left: var(--boardCircleWidth);
@@ -85,7 +87,7 @@ board > div, footer > div {
 }
 
 /* Vertical connector lines */
-#slot7::before, #slot8::before, #slot9::before {
+#slot6::before, #slot7::before, #slot8::before {
     content: "";
     position: absolute;
     left: calc((var(--boardCircleHeight) + var(--boardCircleWidth)) / 2 - 0.5vh);
