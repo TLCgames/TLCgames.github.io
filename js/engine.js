@@ -60,16 +60,35 @@ class Board{
     constructor(){
         this.slots = [0,1,2,3,4,5,6,7,8];
         this.values = [0,0,0,0,0,0,0,0,0];
+        this.player = [0,0,0,0,0,0,0,0,0];
         this.idx = [];
     }
     placeChip(val,pl,pos){
         // Update board data and UI
         this.values[pos] = val;
-        console.log(this.idx);
-        console.log(pos);
+        this.player[pos] = pl;
         var thisElement = document.getElementById(this.idx[pos]);
         thisElement.style.background = bgColors[pl];
         thisElement.innerHTML = val;
+    }
+    testWin(){
+        // Check horizontals and verticals
+        for(var i=0; i < 3; i++){
+            if(this.player[i*3] != 0 && this.player[i*3] == this.player[i*3+1] && this.player[i*3+1] == this.player[i*3+2]){
+                win(this.player[i*3]);
+            }
+            if(this.player[i] != 0 && this.player[i] == this.player[i+3] && this.player[i+3] == this.player[i+6]){
+                win(this.player[i]);
+            }
+        }
+        // Check diagonals if center is filled
+        if(this.player[4] != 0){
+            for(var i=0; i < 2; i++){
+                if(this.player[i*2] == this.player[4] && this.player[4] == this.player[8 - i*2]){
+                    win(this.player[4]);
+                }
+            }
+        }
     }
     validMove(slot){
         if(values[slot] == 0){
@@ -101,7 +120,6 @@ function assignPieces(){
         document.getElementById(chipData[i].id).style.background = bgColors[chipData[i].player]
         chipValues.splice(chipKey, 1);
     }
-    console.log(chipData);
     // Remove start game event listener
     gameControlButton.removeEventListener('click', () => { assignPieces(); });
     // Add event listeners for each player to return 1 of their chips
@@ -156,6 +174,8 @@ const selector = function(targ){
             if(targ.target.id == trayChips[subArr][0] && trayChips[subArr][1] == activePlayer){
                 activeChip = trayChips[subArr][2];
                 chipData[trayChips[subArr][2]].setActive();
+                trayChips.splice(subArr, 1);
+                break;
             }
         }
     }
@@ -163,15 +183,16 @@ const selector = function(targ){
 
 // Placer for phase 2
 const placer = function(targ){
-    console.log('test1');
     if(playerActive == true && phase == 2){
-        console.log('test2');
         var boardPosition = targ.target.id[4];
-        // Remove chip from tray
+        // Remove chip from tray and add to board
         chipData[activeChip].placeChip(boardPosition);
-
-        // Insert chip into board
-        
+        if(trayChips.length < 2){
+            board.testWin();
+            if(trayChips.length == 0){
+                initPhaseThree();
+            }
+        }
     }
 }
 
@@ -192,6 +213,14 @@ function initPhaseTwo(){
     activePlayer = 1;
 }
 
+
+function initPhaseThree(){
+
+}
+
+function win(p){
+    document.getElementById('info').innerHTML = `Player ${p} won by matching 3 in a row!`;
+}
 
 // Allow start button activation
 gameControlButton.addEventListener('click', () => { assignPieces(); });
