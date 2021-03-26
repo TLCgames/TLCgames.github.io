@@ -42,17 +42,15 @@ class Chip{
     }
     placeChip(boardPosition) {
         if(this.active == true){
+            this.setInactive();
             this.position = boardPosition;
-            // Remove chip from tray
+            // Remove chip from tray/board
             var thisElement = document.getElementById(this.id);
             thisElement.style.background = bgColors[0];
             thisElement.innerHTML = '';
-            thisElement.style.color = "var(--unselect)";
-            thisElement.removeEventListener('click', deselector);
             // Add chip to board and update html id of chip
             this.id = board.idx[boardPosition];
             board.placeChip(this.value,this.player,boardPosition);
-            playerActive = null;
             activePlayer = 3 - activePlayer;
         }
     }
@@ -66,7 +64,7 @@ class Board{
         this.idx = [];
     }
     placeChip(val,pl,pos){
-        // Update board data and UI
+        // Update new board data and UI
         this.values[pos] = val;
         this.player[pos] = pl;
         var thisElement = document.getElementById(this.idx[pos]);
@@ -93,7 +91,8 @@ class Board{
         }
     }
     validMove(slot){
-        if(values[slot] == 0){
+        if(this.values[slot] == 0){
+            // Check for adjacency
             return true;
         }
         else{
@@ -150,7 +149,6 @@ function returnChip(id){
         returnTracker.sort((a,b) => a - b);
         chipData.splice(returnTracker[1], 1);
         chipData.splice(returnTracker[0], 1);
-        console.log(chipData);
         phase = 2;
         initPhaseTwo();
     }
@@ -167,17 +165,35 @@ const deselector = function(targ){
             }
         }
     }
+    if(phase == 3){
+        for(_chip in chipData){
+            if(chipData[_chip].id == targ.target.id){
+                chipData[_chip].setInactive();
+                activeChip = -1;
+            }
+        }
+    }
 }
 
 // Selector for phase 2 and 3
 const selector = function(targ){
-    if(playerActive == null && phase == 2){
-        for(subArr in trayChips){
-            if(targ.target.id == trayChips[subArr][0] && trayChips[subArr][1] == activePlayer){
-                activeChip = trayChips[subArr][2];
-                chipData[trayChips[subArr][2]].setActive();
-                trayChips.splice(subArr, 1);
-                break;
+    if(playerActive == null){
+        if(phase == 2){
+            for(subArr in trayChips){
+                if(targ.target.id == trayChips[subArr][0] && trayChips[subArr][1] == activePlayer){
+                    activeChip = trayChips[subArr][2];
+                    chipData[trayChips[subArr][2]].setActive();
+                    trayChips.splice(subArr, 1);
+                    break;
+                }
+            }
+        }
+        if(phase == 3 && boardChips[targ.target.id] == activePlayer){
+            for(_chip in chipData){
+                if(chipData[_chip].id == targ.target.id){
+                    chipData[_chip].setActive();
+                    activeChip = _chip;
+                }
             }
         }
     }
@@ -185,14 +201,28 @@ const selector = function(targ){
 
 // Placer for phase 2
 const placer = function(targ){
-    if(playerActive == true && phase == 2){
-        var boardPosition = targ.target.id[4];
-        // Remove chip from tray and add to board
-        chipData[activeChip].placeChip(boardPosition);
-        if(trayChips.length < 2){
-            board.testWin();
-            if(trayChips.length == 0){
-                initPhaseThree();
+    if(playerActive == true){
+        if(playerActive == true && phase == 2){
+            var boardPosition = targ.target.id[4];
+            // Remove chip from tray and add to board
+            chipData[activeChip].placeChip(boardPosition);
+            document.getElementById(targ.target.id).removeEventListener('click', placer);
+            if(trayChips.length < 2){
+                board.testWin();
+                if(trayChips.length == 0){
+                    initPhaseThree();
+                }
+            }
+        }
+        if(phase == 3){
+            var boardPosition = targ.target.id[4];
+            if(board.validMove(boardPosition)){
+                // Before updating new data, update the chip's previous slot data
+                board.values[chipData[activeChip].position] = 0;
+                board.player[chipData[activeChip].position] = 0;
+                boardChips[chipData[activeChip].id] = 0;
+                boardChips[targ.target.id] = activePlayer;
+                chipData[activeChip].placeChip(boardPosition);
             }
         }
     }
@@ -215,10 +245,19 @@ function initPhaseTwo(){
     activePlayer = 1;
 }
 
-
+boardChips = {};
 function initPhaseThree(){
     console.log(chipData);
-    
+    console.log(board);
+    phase = 3;
+    // Create array of [id[4],player] for board chips and add selector event listeners
+    // Add placer event listeners for all board slots
+    for(i in board.idx){
+        document.getElementById(board.idx[i]).addEventListener('click', selector);
+        boardChips[board.idx[i]] = board.player[i];
+        document.getElementById(board.idx[i]).addEventListener('click', placer);
+    }
+    console.log(boardChips);
 }
 
 function win(p){

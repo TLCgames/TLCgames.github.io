@@ -24,6 +24,7 @@
 }
 
 gameArea {
+    user-select: none;
     display: grid;
     grid-template-columns: minmax(50px, 1fr) minmax(200px, 4fr) minmax(50px, 1fr);
     grid-template-rows: minmax(50px, 15vh) minmax(300px, 60vh) minmax(50px, max(80px, 10vh));
