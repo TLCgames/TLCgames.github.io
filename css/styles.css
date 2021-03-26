@@ -141,4 +141,26 @@ footer {
 
 rightFooter {
     grid-area: rightFooter;
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: 50%;
+}
+
+rightFooter > header {
+    flex-basis: 100%;
+}
+
+rightFooter > player1, rightFooter > player2 {
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: 50%;
+    flex-direction: column;
+    font-weight: 600;
+}
+
+player1 {
+    color: darkslateblue;
+}
+player2 {
+    color: darkred;
 }

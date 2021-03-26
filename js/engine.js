@@ -5,8 +5,10 @@ gameControlButton = document.getElementById("header");
 trayChipArr = trayElement.getElementsByTagName("div");
 boardChipArr = boardElement.getElementsByTagName("div");
 
-activePlayer = null;
-playerActive = null;
+// activePlayer tracks which player's turn it is
+let activePlayer = null;
+// playerActive tracks whether active player has a chip selected but not yet moved/placed
+let playerActive = null;
 let phase = 0;
 // Create chip data constructor
 class Chip{
@@ -167,7 +169,7 @@ const deselector = function(targ){
     }
 }
 
-// Selector for phase 2
+// Selector for phase 2 and 3
 const selector = function(targ){
     if(playerActive == null && phase == 2){
         for(subArr in trayChips){
@@ -215,7 +217,8 @@ function initPhaseTwo(){
 
 
 function initPhaseThree(){
-
+    console.log(chipData);
+    
 }
 
 function win(p){
