@@ -5,10 +5,14 @@ gameControlButton = document.getElementById("header");
 trayChipArr = trayElement.getElementsByTagName("div");
 boardChipArr = boardElement.getElementsByTagName("div");
 
+const adjacency = {0 : [1,3], 1 : [0,2], 2 : [1,5], 3 : [0,6], 5 : [2,8], 6 : [3,7], 7 : [6,8], 8 : [5,7]}
+const threes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[2,4,6],[0,4,8]];
+
 // activePlayer tracks which player's turn it is
 let activePlayer = null;
 // playerActive tracks whether active player has a chip selected but not yet moved/placed
 let playerActive = null;
+let score = [0,0];
 let phase = 0;
 // Create chip data constructor
 class Chip{
@@ -51,6 +55,13 @@ class Chip{
             // Add chip to board and update html id of chip
             this.id = board.idx[boardPosition];
             board.placeChip(this.value,this.player,boardPosition);
+            // Test for points after new move
+            if(phase == 3){
+                if(board.testPoint(boardPosition)){
+                    addPoint(activePlayer);
+                }
+            }
+            board.testWin();
             activePlayer = 3 - activePlayer;
         }
     }
@@ -73,31 +84,78 @@ class Board{
     }
     testWin(){
         // Check horizontals and verticals
+        var winner = 0;
         for(var i=0; i < 3; i++){
             if(this.player[i*3] != 0 && this.player[i*3] == this.player[i*3+1] && this.player[i*3+1] == this.player[i*3+2]){
-                win(this.player[i*3]);
+                winner = this.player[i*3];
             }
             if(this.player[i] != 0 && this.player[i] == this.player[i+3] && this.player[i+3] == this.player[i+6]){
-                win(this.player[i]);
+                winner = this.player[i];
             }
         }
         // Check diagonals if center is filled
         if(this.player[4] != 0){
             for(var i=0; i < 2; i++){
                 if(this.player[i*2] == this.player[4] && this.player[4] == this.player[8 - i*2]){
-                    win(this.player[4]);
+                    winner = this.player[4];
                 }
             }
+        }
+        if(winner != 0){
+            win(winner);
         }
     }
     validMove(slot){
         if(this.values[slot] == 0){
             // Check for adjacency
-            return true;
+            if(chipData[activeChip].position == 4 || slot == 4 || adjacency[chipData[activeChip].position].includes(parseInt(slot))){
+                return true;
+            }
         }
-        else{
-            return false;
-        }
+        return false;
+    }
+    testPoint(slot){
+        // Check which sets contain slot
+        var toCheck = [];
+        var posToCheck = [];
+        threes.forEach(function(three){
+            if(three.includes(slot)){
+                toCheck.push(three);
+            }
+        })
+        // For sets containing the new move, check if all 3 are filled
+        toCheck.forEach(function(set){
+            console.log(this.player);
+            console.log(set);
+            var posMap = set.map(pos => this.player[pos]);
+            if(posMap.includes(0) == false){
+                if(board.checkForPoint(set)){
+                    return true;
+                }
+            }
+        }, this)
+        return false;
+    }
+    checkForPoint(set){
+        var even = [ 2, 4, 6, 8 ];
+        var odd = [ 1, 3, 5, 7, 9 ];
+        var factor6 = [ 1, 2, 3, 6 ];
+        var factor8 = [ 1, 2, 4, 8 ];
+        var factor9 = [ 1, 3, 9 ];
+        var multiple3 = [ 3, 6, 9 ];
+        var perfectsquare = [ 1, 4, 9 ];
+        var prime = [ 2, 3, 5, 7 ];
+        var groups = [even,odd,factor6,factor8,factor9,multiple3,perfectsquare,prime];
+        var setValues = set.map(pos => this.values[pos]);
+        console.log(setValues);
+        // For each of the test arrays, check is all set values are included in it
+        groups.forEach(function(testArr){
+            if(setValues.every(value => testArr.includes(value))){
+                addPoint(activePlayer);
+                return true;
+            }
+        })
+        return false;
     }
 }
 
@@ -215,13 +273,15 @@ const placer = function(targ){
             }
         }
         if(phase == 3){
-            var boardPosition = targ.target.id[4];
+            var boardPosition = parseInt(targ.target.id[4]);
+            console.log('prevalid');
             if(board.validMove(boardPosition)){
                 // Before updating new data, update the chip's previous slot data
                 board.values[chipData[activeChip].position] = 0;
                 board.player[chipData[activeChip].position] = 0;
                 boardChips[chipData[activeChip].id] = 0;
                 boardChips[targ.target.id] = activePlayer;
+                // placeChip passes to testForPoint
                 chipData[activeChip].placeChip(boardPosition);
             }
         }
@@ -250,7 +310,7 @@ function initPhaseThree(){
     console.log(chipData);
     console.log(board);
     phase = 3;
-    // Create array of [id[4],player] for board chips and add selector event listeners
+    // Create array of [html id[4],player] for board chips and add selector event listeners
     // Add placer event listeners for all board slots
     for(i in board.idx){
         document.getElementById(board.idx[i]).addEventListener('click', selector);
@@ -260,8 +320,20 @@ function initPhaseThree(){
     console.log(boardChips);
 }
 
-function win(p){
-    document.getElementById('info').innerHTML = `Player ${p} won by matching 3 in a row!`;
+function addPoint(player){
+    score[player-1] += 1;
+    document.getElementById(player).innerHTML = score[player-1];
+}
+
+function win(player){
+    if(phase == 2){
+        document.getElementById('info').innerHTML = `Player ${player} won by matching 3 in a row!`;
+    }
+    if(phase == 3){
+        document.getElementById('info').innerHTML = `Player ${player} scored 3 points and ended the round!`;
+        score[player-1] += 3;
+        document.getElementById(player).innerHTML = score[player-1];
+    }
 }
 
 // Allow start button activation
