@@ -229,20 +229,10 @@ function returnChip(id){
 let activeChip = -1;
 // Deselector for phase 2 and 3
 const deselector = function(targ){
-    if(phase == 2){
-        for(subArr in trayChips){
-            if(targ.target.id == trayChips[subArr][0]){
-                activeChip = -1;
-                chipData[trayChips[subArr][2]].setInactive();
-            }
-        }
-    }
-    if(phase == 3){
-        for(_chip in chipData){
-            if(chipData[_chip].id == targ.target.id){
-                chipData[_chip].setInactive();
-                activeChip = -1;
-            }
+    for(subArr in trayChips){
+        if(targ.target.id == trayChips[subArr][0]){
+            activeChip = -1;
+            chipData[trayChips[subArr][2]].setInactive();
         }
     }
 }
@@ -250,23 +240,12 @@ const deselector = function(targ){
 // Selector for phase 2 and 3
 const selector = function(targ){
     if(playerActive == null){
-        if(phase == 2){
-            for(subArr in trayChips){
-                if(targ.target.id == trayChips[subArr][0] && trayChips[subArr][1] == activePlayer){
-                    activeChip = trayChips[subArr][2];
-                    chipData[trayChips[subArr][2]].setActive();
-                    trayChips.splice(subArr, 1);
-                    return;
-                }
-            }
-        }
-        if(phase == 3 && boardChips[targ.target.id] == activePlayer){
-            for(_chip in chipData){
-                if(chipData[_chip].id == targ.target.id){
-                    chipData[_chip].setActive();
-                    activeChip = _chip;
-                    console.log('activate');
-                }
+        for(subArr in trayChips){
+            if(targ.target.id == trayChips[subArr][0] && trayChips[subArr][1] == activePlayer){
+                activeChip = trayChips[subArr][2];
+                chipData[trayChips[subArr][2]].setActive();
+                trayChips.splice(subArr, 1);
+                return;
             }
         }
     }
@@ -275,29 +254,14 @@ const selector = function(targ){
 // Placer for phase 2
 const placer = function(targ){
     if(playerActive == true){
-        if(playerActive == true && phase == 2){
-            var boardPosition = targ.target.id[4];
-            // Remove chip from tray and add to board
-            chipData[activeChip].placeChip(boardPosition);
-            document.getElementById(targ.target.id).removeEventListener('click', placer);
-            if(trayChips.length < 2){
-                board.testWin();
-                if(trayChips.length == 0){
-                    initPhaseThree();
-                }
-            }
-        }
-        if(phase == 3){
-            var boardPosition = parseInt(targ.target.id[4]);
-            console.log('prevalid');
-            if(board.validMove(boardPosition)){
-                // Before updating new data, update the chip's previous slot data
-                board.values[chipData[activeChip].position] = 0;
-                board.player[chipData[activeChip].position] = 0;
-                boardChips[chipData[activeChip].id] = 0;
-                boardChips[targ.target.id] = activePlayer;
-                // placeChip passes to testForPoint
-                chipData[activeChip].placeChip(boardPosition);
+        var boardPosition = targ.target.id[4];
+        // Remove chip from tray and add to board
+        chipData[activeChip].placeChip(boardPosition);
+        document.getElementById(targ.target.id).removeEventListener('click', placer);
+        if(trayChips.length < 2){
+            board.testWin();
+            if(trayChips.length == 0){
+                initPhaseThree();
             }
         }
     }
