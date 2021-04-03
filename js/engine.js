@@ -45,6 +45,8 @@ class Chip{
     }
     placeChip(boardPosition) {
         if(this.active == true){
+            // Record move as lastMove
+            lastMove = [this.value, this.position];
             this.setInactive();
             this.position = boardPosition;
             // Remove chip from tray/board
@@ -56,11 +58,10 @@ class Chip{
             board.placeChip(this.value,this.player,boardPosition);
             // Test for points after new move
             if(phase == 3){
-                if(board.testPoint(boardPosition)){
-                    addPoint(activePlayer);
-                }
+                board.testPoint(boardPosition);
             }
             board.testWin();
+            console.log(bonus);
             // After point is added, update html with turn info if nobody won
             if(activePlayer < 3){
                 // If a bonus move was earned and it isn't their 3rd move in a row
@@ -123,8 +124,14 @@ class Board{
     }
     validMove(slot){
         if(this.values[slot] == 0){
+            // Check if it's a repeat move
+            console.log([chipData[activeChip].value,slot]);
+            console.log(lastMove);
+            if(chipData[activeChip].value == lastMove[0] && slot == lastMove[1]){
+                return false;
+            }
             // Check for adjacency
-            if(chipData[activeChip].position == 4 || slot == 4 || adjacency[chipData[activeChip].position].includes(parseInt(slot))){
+            else if(chipData[activeChip].position == 4 || slot == 4 || adjacency[chipData[activeChip].position].includes(parseInt(slot))){
                 return true;
             }
         }
@@ -133,7 +140,7 @@ class Board{
     testPoint(slot){
         // Check which sets contain slot
         var toCheck = [];
-        var posToCheck = [];
+        var pointEarned = false;
         threes.forEach(function(three){
             if(three.includes(slot)){
                 toCheck.push(three);
@@ -143,12 +150,21 @@ class Board{
         toCheck.forEach(function(set){
             var posMap = set.map(pos => this.player[pos]);
             if(posMap.includes(0) == false){
+                // If all 3 are filled, check for point
                 if(board.checkForPoint(set)){
-                    return true;
+                    pointEarned = true;
+                    console.log(bonus);
+                    console.log(pointEarned);
+                    return;
                 }
             }
         }, this)
-        return false;
+        // If no point was found, reset bonus counter
+        if(!pointEarned){
+            bonus = 0;
+            console.log(bonus);
+            return;
+        }
     }
     checkForPoint(set){
         var even = [ 2, 4, 6, 8 ];
@@ -160,8 +176,12 @@ class Board{
         var perfectsquare = [ 1, 4, 9 ];
         var prime = [ 2, 3, 5, 7 ];
         var groups = [even,odd,factor6,factor8,factor9,multiple3,perfectsquare,prime];
-        var setValues = set.map(pos => this.values[pos]);
-        console.log(setValues);
+        var setValues = set.map(pos => this.values[pos]).sort();
+        // Test for sum
+        if(setValues[0] + setValues[1] == setValues[2]){
+            addPoint(activePlayer);
+            return true;
+        }
         // For each of the test arrays, check is all set values are included in it
         groups.forEach(function(testArr){
             if(setValues.every(value => testArr.includes(value))){
@@ -169,7 +189,6 @@ class Board{
                 return true;
             }
         })
-        return false;
     }
 }
 
@@ -254,7 +273,7 @@ const selector = function(targ){
 // Placer for phase 2
 const placer = function(targ){
     if(playerActive == true){
-        var boardPosition = targ.target.id[4];
+        var boardPosition = parseInt(targ.target.id[4]);
         // Remove chip from tray and add to board
         chipData[activeChip].placeChip(boardPosition);
         document.getElementById(targ.target.id).removeEventListener('click', placer);
