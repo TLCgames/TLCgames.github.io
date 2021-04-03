@@ -14,6 +14,9 @@ let activePlayer = null;
 let playerActive = null;
 let score = [0,0];
 let phase = 0;
+let bonus = 0;
+// lastMove records the last chip value and last position of that chip so it isn't moved back
+let lastMove = [0,0];
 // Create chip data constructor
 class Chip{
     constructor(value, player, position, color, id) {
@@ -29,8 +32,6 @@ class Chip{
             this.active = true;
             var thisElement = document.getElementById(this.id);
             thisElement.style.color = "var(--select)";
-            thisElement.addEventListener('click', deselector);
-            thisElement.removeEventListener('click', selector);
             playerActive = true;
         }
     }
@@ -39,8 +40,6 @@ class Chip{
             this.active = false;
             var thisElement = document.getElementById(this.id);
             thisElement.style.color = "var(--unselect)";
-            thisElement.removeEventListener('click', deselector);
-            thisElement.addEventListener('click', selector);
             playerActive = null;
         }
     }
@@ -62,7 +61,24 @@ class Chip{
                 }
             }
             board.testWin();
-            activePlayer = 3 - activePlayer;
+            // After point is added, update html with turn info if nobody won
+            if(activePlayer < 3){
+                // If a bonus move was earned and it isn't their 3rd move in a row
+                if(bonus < 3 && bonus > 0){
+                    document.getElementById('info').innerHTML = `Player ${activePlayer} scored a point and earned a bonus move!`;
+                    this.setInactive();
+                }
+                // If no bonus move is available
+                else{
+                    activePlayer = 3 - activePlayer;
+                    bonus = 0;
+                    document.getElementById('info').innerHTML = `Player ${activePlayer}'s turn.`;
+                }
+            }
+            // If a player ended the round
+            else{
+                document.getElementById('info').innerHTML = `Player ${activePlayer - 2} won the game!`;
+            }
         }
     }
 }
@@ -125,8 +141,6 @@ class Board{
         })
         // For sets containing the new move, check if all 3 are filled
         toCheck.forEach(function(set){
-            console.log(this.player);
-            console.log(set);
             var posMap = set.map(pos => this.player[pos]);
             if(posMap.includes(0) == false){
                 if(board.checkForPoint(set)){
@@ -165,7 +179,7 @@ const bgColors = ["var(--bgEmpty)", "var(--bgPlayer1)", "var(--bgPlayer2)"];
 let returner = function(targ){ returnChip(targ.target.id) };
 
 // Initialize game by distributing pieces
-function assignPieces(){
+const assignPieces = function(){
     phase = 1;
     board = new Board();
     var chipValues = [1,2,3,4,5,6,7,8,9];
@@ -180,7 +194,7 @@ function assignPieces(){
         chipValues.splice(chipKey, 1);
     }
     // Remove start game event listener
-    gameControlButton.removeEventListener('click', () => { assignPieces(); });
+    gameControlButton.removeEventListener('click', assignPieces);
     // Add event listeners for each player to return 1 of their chips
     for(var j=0; j < 8; j++){
         document.getElementById(chipData[j].id).addEventListener('click', returner);
@@ -242,7 +256,7 @@ const selector = function(targ){
                     activeChip = trayChips[subArr][2];
                     chipData[trayChips[subArr][2]].setActive();
                     trayChips.splice(subArr, 1);
-                    break;
+                    return;
                 }
             }
         }
@@ -251,6 +265,7 @@ const selector = function(targ){
                 if(chipData[_chip].id == targ.target.id){
                     chipData[_chip].setActive();
                     activeChip = _chip;
+                    console.log('activate');
                 }
             }
         }
@@ -288,6 +303,77 @@ const placer = function(targ){
     }
 }
 
+// Mover for phase 3
+let lastSelected = -1;
+const mover = function(targ){
+    var boardPosition = parseInt(targ.target.id[4]);
+    console.log('prevalid');
+    // If clicked slot is not empty
+    if(board.player[boardPosition] != 0){
+        for(_chip in chipData){
+        // Find the clicked chip
+            if(chipData[_chip].id == targ.target.id){
+        // Test if the clicked chip is active player's
+                if(chipData[_chip].player == activePlayer){
+        // If it is, deselect last selected chip and select target
+                    if(lastSelected >= 0){
+                        chipData[lastSelected].setInactive();
+                    }
+                    if(chipData[_chip].active == false){
+                        chipData[_chip].setActive();
+                        activeChip = _chip;
+                    }
+                    lastSelected = _chip;
+                    return;
+                }
+            }
+        }
+    }
+    else {
+    // If the slot is empty, check if last chip selected is active
+        if(chipData[lastSelected].active){
+            // If it is, check for valid move
+            if(board.validMove(boardPosition)){
+                // Before updating new data, update the chip's previous slot data
+                board.values[chipData[activeChip].position] = 0;
+                board.player[chipData[activeChip].position] = 0;
+                boardChips[chipData[activeChip].id] = 0;
+                boardChips[targ.target.id] = activePlayer;
+                // placeChip passes to testForPoint
+                chipData[activeChip].placeChip(boardPosition);
+            }
+        }
+    }
+
+    // // First deselect the active chip
+    // for(_chip in chipData){
+    //     if(chipData[_chip].id == targ.target.id){
+    //         chipData[_chip].setInactive();
+    //         activeChip = -1;
+    //     }
+    // }
+    // // Selector
+    // if(boardChips[targ.target.id] == activePlayer){
+    //     for(_chip in chipData){
+    //         if(chipData[_chip].id == targ.target.id){
+    //             chipData[_chip].setActive();
+    //             activeChip = _chip;
+    //             console.log('activate');
+    //         }
+    //     }
+    // }
+    // // Mover
+    // if(board.validMove(boardPosition)){
+    //     // Before updating new data, update the chip's previous slot data
+    //     board.values[chipData[activeChip].position] = 0;
+    //     board.player[chipData[activeChip].position] = 0;
+    //     boardChips[chipData[activeChip].id] = 0;
+    //     boardChips[targ.target.id] = activePlayer;
+    //     // placeChip passes to testForPoint
+    //     chipData[activeChip].placeChip(boardPosition);
+    // }
+}
+
 // Tic-tac-toe style placement of chips
 let trayChips = [];
 
@@ -307,22 +393,27 @@ function initPhaseTwo(){
 
 boardChips = {};
 function initPhaseThree(){
-    console.log(chipData);
-    console.log(board);
     phase = 3;
     // Create array of [html id[4],player] for board chips and add selector event listeners
     // Add placer event listeners for all board slots
     for(i in board.idx){
-        document.getElementById(board.idx[i]).addEventListener('click', selector);
+        // Add selector and placer listeners
+        // document.getElementById(board.idx[i]).addEventListener('click', selector);
+        // document.getElementById(board.idx[i]).addEventListener('click', placer);
+
+        // Add mover selectors and remove old listeners
+        document.getElementById(board.idx[i]).addEventListener('click', mover);
+        document.getElementById(board.idx[i]).removeEventListener('click', placer);
         boardChips[board.idx[i]] = board.player[i];
-        document.getElementById(board.idx[i]).addEventListener('click', placer);
     }
-    console.log(boardChips);
 }
 
 function addPoint(player){
+    // Adjust score data and html
     score[player-1] += 1;
     document.getElementById(player).innerHTML = score[player-1];
+    // Increase bonus move counter
+    bonus += 1;
 }
 
 function win(player){
@@ -330,11 +421,11 @@ function win(player){
         document.getElementById('info').innerHTML = `Player ${player} won by matching 3 in a row!`;
     }
     if(phase == 3){
-        document.getElementById('info').innerHTML = `Player ${player} scored 3 points and ended the round!`;
         score[player-1] += 3;
         document.getElementById(player).innerHTML = score[player-1];
+        activePlayer = player + 2;
     }
 }
 
 // Allow start button activation
-gameControlButton.addEventListener('click', () => { assignPieces(); });
+gameControlButton.addEventListener('click', assignPieces);
