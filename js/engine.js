@@ -45,7 +45,7 @@ class Chip{
     }
     placeChip(boardPosition) {
         if(this.active == true){
-            // Record move as lastMove
+            // Record previous chip info as lastMove before updating position
             lastMove = [this.value, this.position];
             this.setInactive();
             this.position = boardPosition;
@@ -56,9 +56,9 @@ class Chip{
             // Add chip to board and update html id of chip
             this.id = board.idx[boardPosition];
             board.placeChip(this.value,this.player,boardPosition);
-            // Test for points after new move
+            // Test for point earned after move in phase 3 (true/false)
             if(phase == 3){
-                board.testPoint(boardPosition);
+                var pointEarned = board.testPoint(boardPosition);
             }
             board.testWin();
             console.log(bonus);
@@ -138,35 +138,7 @@ class Board{
         return false;
     }
     testPoint(slot){
-        // Check which sets contain slot
-        var toCheck = [];
-        var pointEarned = false;
-        threes.forEach(function(three){
-            if(three.includes(slot)){
-                toCheck.push(three);
-            }
-        })
-        // For sets containing the new move, check if all 3 are filled
-        toCheck.forEach(function(set){
-            var posMap = set.map(pos => this.player[pos]);
-            if(posMap.includes(0) == false){
-                // If all 3 are filled, check for point
-                if(board.checkForPoint(set)){
-                    pointEarned = true;
-                    console.log(bonus);
-                    console.log(pointEarned);
-                    return;
-                }
-            }
-        }, this)
-        // If no point was found, reset bonus counter
-        if(!pointEarned){
-            bonus = 0;
-            console.log(bonus);
-            return;
-        }
-    }
-    checkForPoint(set){
+        // Variables for point combos
         var even = [ 2, 4, 6, 8 ];
         var odd = [ 1, 3, 5, 7, 9 ];
         var factor6 = [ 1, 2, 3, 6 ];
@@ -176,19 +148,46 @@ class Board{
         var perfectsquare = [ 1, 4, 9 ];
         var prime = [ 2, 3, 5, 7 ];
         var groups = [even,odd,factor6,factor8,factor9,multiple3,perfectsquare,prime];
-        var setValues = set.map(pos => this.values[pos]).sort();
-        // Test for sum
-        if(setValues[0] + setValues[1] == setValues[2]){
-            addPoint(activePlayer);
-            return true;
-        }
-        // For each of the test arrays, check is all set values are included in it
-        groups.forEach(function(testArr){
-            if(setValues.every(value => testArr.includes(value))){
-                addPoint(activePlayer);
-                return true;
+        var pointEarned = false;
+        // Check which sets of 3-in-a-row slots contain slot that was moved to
+        var toCheck = [];
+        threes.forEach(function(three){
+            if(three.includes(slot)){
+                toCheck.push(three);
             }
         })
+        // For sets containing the new move, check if all 3 are player controlled
+        toCheck.forEach(function(set){
+            var valMap = set.map(pos => this.values[pos]).sort();
+            // If all 3 are player controlled, check for a match
+            if(valMap.includes(0) == false){
+                if(valMap[0] + valMap[1] == valMap[2]){
+                    pointEarned = true;
+                }
+                groups.forEach(function(testArr){
+                    if(valMap.every(value => testArr.includes(value))){
+                        pointEarned = true;
+                    }
+                })
+            }
+        }, this)
+
+        // If no point was found, reset bonus counter
+        if(!pointEarned){
+            bonus = 0;
+            console.log(bonus);
+            console.log('no point earned')
+            return false;
+        }
+        // Else, increment bonus counter and update score data and html
+        else{
+            bonus += 1;
+            console.log(bonus);
+            console.log('point earned');
+            score[activePlayer-1] += 1;
+            document.getElementById(activePlayer).innerHTML = score[activePlayer-1];
+            return true;
+        }
     }
 }
 
@@ -389,14 +388,6 @@ function initPhaseThree(){
         document.getElementById(board.idx[i]).removeEventListener('click', placer);
         boardChips[board.idx[i]] = board.player[i];
     }
-}
-
-function addPoint(player){
-    // Adjust score data and html
-    score[player-1] += 1;
-    document.getElementById(player).innerHTML = score[player-1];
-    // Increase bonus move counter
-    bonus += 1;
 }
 
 function win(player){
