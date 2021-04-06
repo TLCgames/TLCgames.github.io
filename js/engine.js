@@ -4,7 +4,9 @@ gameControlButton = document.getElementById("gameControl");
 
 trayChipArr = trayElement.getElementsByTagName("div");
 boardChipArr = boardElement.getElementsByTagName("div");
+
 infoPanel = document.getElementById('info');
+phasePanel = document.getElementById('phase');
 
 const adjacency = {0 : [1,3], 1 : [0,2], 2 : [1,5], 3 : [0,6], 5 : [2,8], 6 : [3,7], 7 : [6,8], 8 : [5,7]}
 const threes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[2,4,6],[0,4,8]];
@@ -96,7 +98,7 @@ class Chip{
             board.placeChip(this.value,this.player,boardPosition);
             // Test for point earned after move in phase 3 (true/false)
             if(phase == 3){
-                var pointEarned = board.testPoint(boardPosition);
+                board.testPoint(boardPosition);
             }
             board.testWin();
             console.log(bonus);
@@ -105,6 +107,8 @@ class Chip{
                 // If a bonus move was earned and it isn't their 3rd move in a row
                 if(bonus < 3 && bonus > 0){
                     infoPanel.innerHTML = `Player ${activePlayer} scored a point and earned a bonus move!`;
+                    gameControlButton.addEventListener('click', passBonus);
+                    gameControlButton.innerHTML = `Pass Turn`;
                     this.setInactive();
                 }
                 // If no bonus move is available
@@ -248,7 +252,7 @@ const assignPieces = function(){
         document.getElementById(chipData[j].id).addEventListener('click', returner);
     }
     activePlayer = startingPlayer;
-    document.getElementById('phase').innerHTML = `Phase 1: Each player returns one of their four chips.`;
+    phasePanel.innerHTML = `Phase 1: Each player returns one of their four chips.`;
     infoPanel.innerHTML = `Player ${activePlayer}'s turn to return a chip.`;
 }
 
@@ -295,6 +299,7 @@ const selector = function(targ){
     if(playerActive == null){
         for(subArr in trayChips){
             if(targ.target.id == trayChips[subArr][0] && trayChips[subArr][1] == activePlayer){
+                document.getElementById(targ.target.id).addEventListener('click', deselector);
                 activeChip = trayChips[subArr][2];
                 chipData[trayChips[subArr][2]].setActive();
                 trayChips.splice(subArr, 1);
@@ -360,7 +365,7 @@ const mover = function(targ){
 // Tic-tac-toe style placement of chips
 
 function initPhaseTwo(){
-    document.getElementById('phase').innerHTML = `Phase 2: Place chips on the board, trying to get 3 in a row.`;
+    phasePanel.innerHTML = `Phase 2: Place chips on the board, trying to get 3 in a row.`;
     infoPanel.innerHTML = `Player ${activePlayer}'s turn to place a chip!`;
     for(i in chipData){
         document.getElementById(chipData[i].id).addEventListener('click', selector);
@@ -376,6 +381,7 @@ function initPhaseTwo(){
 
 function initPhaseThree(){
     phase = 3;
+    phasePanel.innerHTML = `Phase 3: Move chips to form relations.`;
     // Create array of [html id[4],player] for board chips and add selector event listeners
     // Add mover event listeners for all board slots
     for(i in board.idx){
@@ -400,6 +406,20 @@ function win(player){
     document.getElementById(player).innerHTML = score[player-1];
     gameControlButton.addEventListener('click', newRound);
     gameControlButton.innerHTML = `New Round`;
+    phasePanel.innerHTML = `Phase 0: Start a new round.`;
+}
+
+// Pass bonus move
+function passBonus(){
+    // If a chip is currently selected
+    if(playerActive){
+        chipData[lastSelected].setInactive();
+    }
+    gameControlButton.innerHTML = `Good Luck`;
+    gameControlButton.removeEventListener(`click`, passBonus);
+    activePlayer = 3 - activePlayer;
+    bonus = 0;
+    infoPanel.innerHTML = `Player ${activePlayer}'s turn.`;
 }
 
 // Allow start button activation
