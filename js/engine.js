@@ -46,19 +46,13 @@ function newRound(){
     lastMove = [0,0];
     // Toggle starting player
     startingPlayer = 3 - startingPlayer;
-    document.getElementById('board').innerHTML = `                <div id="slot0"></div>
-    <div id="slot1"></div>
-    <div id="slot2"></div>
-    <div id="slot3"></div>
-    <div id="slot4"></div>
-    <div id="slot5"></div>
-    <div id="slot6"></div>
-    <div id="slot7"></div>
-    <div id="slot8"></div>`;
+    // Reset board html
+    document.getElementById('board').innerHTML = `<div id="slot0"></div>    <div id="slot1"></div>    <div id="slot2"></div>    <div id="slot3"></div>    <div id="slot4"></div>    <div id="slot5"></div>    <div id="slot6"></div>    <div id="slot7"></div>    <div id="slot8"></div>`;
     var newSlots = document.getElementById('board').children;
     [...newSlots].forEach(function(slot){
         slot.style.background = bgColors[0];
     })
+    // Re-initialize game
     assignPieces();
 }
 
