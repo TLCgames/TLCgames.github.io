@@ -217,6 +217,7 @@ const assignPieces = function(){
     for(var j=0; j < 8; j++){
         document.getElementById(chipData[j].id).addEventListener('click', returner);
     }
+    document.getElementById('phase').innerHTML = `Phase 1: Each player returns one of their four chips.`;
 }
 
 let returnTracker = [];
@@ -360,6 +361,7 @@ const mover = function(targ){
 let trayChips = [];
 
 function initPhaseTwo(){
+    document.getElementById('phase').innerHTML = `Phase 2: Place chips on the board, trying to get 3 in a row.`;
     for(i in chipData){
         document.getElementById(chipData[i].id).addEventListener('click', selector);
         trayChips.push([chipData[i].id,chipData[i].player,i]);

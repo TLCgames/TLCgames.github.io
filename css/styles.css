@@ -159,6 +159,25 @@ rightFooter > player1, rightFooter > player2 {
     font-weight: 600;
 }
 
+leftHeader {
+    grid-area: leftHeader;
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: 50%;
+}
+
+leftHeader > header {
+    flex-basis: 100%;
+}
+
+leftHeader > player1, leftHeader > player2 {
+    display: flex;
+    flex-wrap: wrap;
+    flex-basis: 50%;
+    flex-direction: column;
+    font-weight: 600;
+}
+
 player1 {
     color: darkslateblue;
 }

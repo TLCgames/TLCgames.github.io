@@ -13,3 +13,11 @@ __To do list__
 * Sound effects
 * Lifting pieces and moving them around
 * Fullscreen board button
+
+__Overall plan__
+1. Add pass turn button for bonus moves.
+2. Require selecting which combination you made (and add 'no relation' button)
+3. Restart game between rounds (and preserve score if needed).
+4. Fix display on phones once game is fully playable and mechanically in line with physical game.
+5. Improve visuals, colors, and add sounds.
+6. Add AI and/or multiplayer.
