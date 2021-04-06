@@ -1,23 +1,67 @@
 boardElement = document.getElementById("board");
 trayElement = document.getElementById("tray");
-gameControlButton = document.getElementById("header");
+gameControlButton = document.getElementById("gameControl");
 
 trayChipArr = trayElement.getElementsByTagName("div");
 boardChipArr = boardElement.getElementsByTagName("div");
+infoPanel = document.getElementById('info');
 
 const adjacency = {0 : [1,3], 1 : [0,2], 2 : [1,5], 3 : [0,6], 5 : [2,8], 6 : [3,7], 7 : [6,8], 8 : [5,7]}
 const threes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[2,4,6],[0,4,8]];
+const colors = ["var(--neutral)", "var(--player1)", "var(--player2)"];
+const bgColors = ["var(--bgEmpty)", "var(--bgPlayer1)", "var(--bgPlayer2)"];
+let returner = function(targ){ returnChip(targ.target.id) };
 
+// Global vars
 // activePlayer tracks which player's turn it is
 let activePlayer = null;
 // playerActive tracks whether active player has a chip selected but not yet moved/placed
 let playerActive = null;
+let startingPlayer = 1;
 let score = [0,0];
 let phase = 0;
 let bonus = 0;
+let returnTracker = [];
+let activeChip = -1;
+let chipData = [];
+let lastSelected = -1;
+let trayChips = [];
+let boardChips = {};
 // lastMove records the last chip value and last position of that chip so it isn't moved back
 let lastMove = [0,0];
 // Create chip data constructor
+
+function newRound(){
+    // Reset global vars except score
+    activePlayer = null;
+    playerActive = null;
+    phase = 0;
+    bonus = 0;
+    returnTracker = [];
+    activeChip = -1;
+    chipData = [];
+    lastSelected = -1;
+    trayChips = [];
+    boardChips = {};
+    lastMove = [0,0];
+    // Toggle starting player
+    startingPlayer = 3 - startingPlayer;
+    document.getElementById('board').innerHTML = `                <div id="slot0"></div>
+    <div id="slot1"></div>
+    <div id="slot2"></div>
+    <div id="slot3"></div>
+    <div id="slot4"></div>
+    <div id="slot5"></div>
+    <div id="slot6"></div>
+    <div id="slot7"></div>
+    <div id="slot8"></div>`;
+    var newSlots = document.getElementById('board').children;
+    [...newSlots].forEach(function(slot){
+        slot.style.background = bgColors[0];
+    })
+    assignPieces();
+}
+
 class Chip{
     constructor(value, player, position, color, id) {
         this.value = value;
@@ -66,19 +110,15 @@ class Chip{
             if(activePlayer < 3){
                 // If a bonus move was earned and it isn't their 3rd move in a row
                 if(bonus < 3 && bonus > 0){
-                    document.getElementById('info').innerHTML = `Player ${activePlayer} scored a point and earned a bonus move!`;
+                    infoPanel.innerHTML = `Player ${activePlayer} scored a point and earned a bonus move!`;
                     this.setInactive();
                 }
                 // If no bonus move is available
                 else{
                     activePlayer = 3 - activePlayer;
                     bonus = 0;
-                    document.getElementById('info').innerHTML = `Player ${activePlayer}'s turn.`;
+                    infoPanel.innerHTML = `Player ${activePlayer}'s turn.`;
                 }
-            }
-            // If a player ended the round
-            else{
-                document.getElementById('info').innerHTML = `Player ${activePlayer - 2} won the game!`;
             }
         }
     }
@@ -191,10 +231,6 @@ class Board{
     }
 }
 
-let chipData = [];
-const colors = ["var(--neutral)", "var(--player1)", "var(--player2)"];
-const bgColors = ["var(--bgEmpty)", "var(--bgPlayer1)", "var(--bgPlayer2)"];
-let returner = function(targ){ returnChip(targ.target.id) };
 
 // Initialize game by distributing pieces
 const assignPieces = function(){
@@ -217,12 +253,15 @@ const assignPieces = function(){
     for(var j=0; j < 8; j++){
         document.getElementById(chipData[j].id).addEventListener('click', returner);
     }
+    activePlayer = startingPlayer;
     document.getElementById('phase').innerHTML = `Phase 1: Each player returns one of their four chips.`;
+    infoPanel.innerHTML = `Player ${activePlayer}'s turn to return a chip.`;
 }
 
-let returnTracker = [];
 
 function returnChip(id){
+    // Change active player and update UI
+    activePlayer = 3 - activePlayer;
     // Hide returned chip
     var returned = document.getElementById(id);
     returned.style.background = bgColors[0];
@@ -243,10 +282,12 @@ function returnChip(id){
         phase = 2;
         initPhaseTwo();
     }
+    else{
+        infoPanel.innerHTML = `Player ${activePlayer}'s turn to return a chip.`;
+    }
 }
 
-let activeChip = -1;
-// Deselector for phase 2 and 3
+// Deselector for phase 2
 const deselector = function(targ){
     for(subArr in trayChips){
         if(targ.target.id == trayChips[subArr][0]){
@@ -255,8 +296,7 @@ const deselector = function(targ){
         }
     }
 }
-
-// Selector for phase 2 and 3
+// Selector for phase 2
 const selector = function(targ){
     if(playerActive == null){
         for(subArr in trayChips){
@@ -269,28 +309,22 @@ const selector = function(targ){
         }
     }
 }
-
 // Placer for phase 2
 const placer = function(targ){
     if(playerActive == true){
         var boardPosition = parseInt(targ.target.id[4]);
         // Remove chip from tray and add to board
-        chipData[activeChip].placeChip(boardPosition);
         document.getElementById(targ.target.id).removeEventListener('click', placer);
-        if(trayChips.length < 2){
-            board.testWin();
-            if(trayChips.length == 0){
-                initPhaseThree();
-            }
+        chipData[activeChip].placeChip(boardPosition);
+        if(trayChips.length == 0){
+            initPhaseThree();
         }
     }
 }
 
 // Mover for phase 3
-let lastSelected = -1;
 const mover = function(targ){
     var boardPosition = parseInt(targ.target.id[4]);
-    console.log('prevalid');
     // If clicked slot is not empty
     if(board.player[boardPosition] != 0){
         for(_chip in chipData){
@@ -327,41 +361,13 @@ const mover = function(targ){
             }
         }
     }
-
-    // // First deselect the active chip
-    // for(_chip in chipData){
-    //     if(chipData[_chip].id == targ.target.id){
-    //         chipData[_chip].setInactive();
-    //         activeChip = -1;
-    //     }
-    // }
-    // // Selector
-    // if(boardChips[targ.target.id] == activePlayer){
-    //     for(_chip in chipData){
-    //         if(chipData[_chip].id == targ.target.id){
-    //             chipData[_chip].setActive();
-    //             activeChip = _chip;
-    //             console.log('activate');
-    //         }
-    //     }
-    // }
-    // // Mover
-    // if(board.validMove(boardPosition)){
-    //     // Before updating new data, update the chip's previous slot data
-    //     board.values[chipData[activeChip].position] = 0;
-    //     board.player[chipData[activeChip].position] = 0;
-    //     boardChips[chipData[activeChip].id] = 0;
-    //     boardChips[targ.target.id] = activePlayer;
-    //     // placeChip passes to testForPoint
-    //     chipData[activeChip].placeChip(boardPosition);
-    // }
 }
 
 // Tic-tac-toe style placement of chips
-let trayChips = [];
 
 function initPhaseTwo(){
     document.getElementById('phase').innerHTML = `Phase 2: Place chips on the board, trying to get 3 in a row.`;
+    infoPanel.innerHTML = `Player ${activePlayer}'s turn to place a chip!`;
     for(i in chipData){
         document.getElementById(chipData[i].id).addEventListener('click', selector);
         trayChips.push([chipData[i].id,chipData[i].player,i]);
@@ -372,19 +378,13 @@ function initPhaseTwo(){
     for(i in board.idx){
         document.getElementById(board.idx[i]).addEventListener('click', placer);
     }
-    activePlayer = 1;
 }
 
-boardChips = {};
 function initPhaseThree(){
     phase = 3;
     // Create array of [html id[4],player] for board chips and add selector event listeners
-    // Add placer event listeners for all board slots
+    // Add mover event listeners for all board slots
     for(i in board.idx){
-        // Add selector and placer listeners
-        // document.getElementById(board.idx[i]).addEventListener('click', selector);
-        // document.getElementById(board.idx[i]).addEventListener('click', placer);
-
         // Add mover selectors and remove old listeners
         document.getElementById(board.idx[i]).addEventListener('click', mover);
         document.getElementById(board.idx[i]).removeEventListener('click', placer);
@@ -393,14 +393,19 @@ function initPhaseThree(){
 }
 
 function win(player){
+    console.log('test');
+    score[player-1] += 3;
     if(phase == 2){
-        document.getElementById('info').innerHTML = `Player ${player} won by matching 3 in a row!`;
-    }
-    if(phase == 3){
-        score[player-1] += 3;
-        document.getElementById(player).innerHTML = score[player-1];
+        infoPanel.innerHTML = `Player ${player} won by matching 3 in a row!`;
         activePlayer = player + 2;
     }
+    if(phase == 3){
+        infoPanel.innerHTML = `Player ${player} ended the round by matching 3 in a row!`;
+        activePlayer = player + 2;
+    }
+    document.getElementById(player).innerHTML = score[player-1];
+    gameControlButton.addEventListener('click', newRound);
+    gameControlButton.innerHTML = `New Round`;
 }
 
 // Allow start button activation

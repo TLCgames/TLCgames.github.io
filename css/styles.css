@@ -133,6 +133,7 @@ right {
 }
 
 leftFooter {
+    font-weight: 600;
     grid-area: leftFooter;
 }
 
