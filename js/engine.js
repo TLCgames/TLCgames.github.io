@@ -54,6 +54,9 @@ function newRound(){
     [...newSlots].forEach(function(slot){
         slot.style.background = bgColors[0];
     })
+    // Remove new round event
+    gameControlButton.removeEventListener('click', newRound);
+    gameControlButton.innerHTML = `Have Fun`;
     // Re-initialize game
     assignPieces();
 }
@@ -113,6 +116,8 @@ class Chip{
                 }
                 // If no bonus move is available
                 else{
+                    gameControlButton.addEventListener('click', passBonus);
+                    gameControlButton.innerHTML = `Have Fun`;
                     activePlayer = 3 - activePlayer;
                     bonus = 0;
                     infoPanel.innerHTML = `Player ${activePlayer}'s turn.`;
