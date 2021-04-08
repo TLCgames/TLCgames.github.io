@@ -218,15 +218,11 @@ class Board{
         // If no point was found, reset bonus counter
         if(!pointEarned){
             bonus = 0;
-            console.log(bonus);
-            console.log('no point earned')
             return false;
         }
         // Else, increment bonus counter and update score data and html
         else{
             bonus += 1;
-            console.log(bonus);
-            console.log('point earned');
             score[activePlayer-1] += 1;
             document.getElementById(activePlayer).innerHTML = score[activePlayer-1];
             return true;
