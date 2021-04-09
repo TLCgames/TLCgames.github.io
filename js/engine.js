@@ -116,7 +116,7 @@ class Chip{
                 }
                 // If no bonus move is available
                 else{
-                    gameControlButton.addEventListener('click', passBonus);
+                    gameControlButton.removeEventListener('click', passBonus);
                     gameControlButton.innerHTML = `Have Fun`;
                     activePlayer = 3 - activePlayer;
                     bonus = 0;
@@ -171,6 +171,7 @@ class Board{
             console.log([chipData[activeChip].value,slot]);
             console.log(lastMove);
             if(chipData[activeChip].value == lastMove[0] && slot == lastMove[1]){
+                infoPanel.innerHTML = `You can't move a piece back to its previous slot in bonus moves!`;
                 return false;
             }
             // Check for adjacency
