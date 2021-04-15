@@ -1,5 +1,5 @@
-boardElement = document.getElementById("board");
-trayElement = document.getElementById("tray");
+let boardElement = document.getElementById("board");
+let trayElement = document.getElementById("tray");
 gameControlButton = document.getElementById("gameControl");
 
 trayChipArr = trayElement.getElementsByTagName("div");
@@ -7,6 +7,33 @@ boardChipArr = boardElement.getElementsByTagName("div");
 
 infoPanel = document.getElementById('info');
 phasePanel = document.getElementById('phase');
+
+let playArea = document.getElementById('playArea');
+
+/* Layout controller */
+document.addEventListener('DOMContentLoaded', function() {
+    adjustLayout();
+}, false);
+
+function adjustLayout() {
+    let windowWidth = window.innerWidth;
+    let windowHeight = window.innerHeight;
+    boardElement = document.getElementById('board');
+    setTimeout(function(){
+        if (windowWidth / windowHeight > 1) {
+            playArea.classList.add("row");
+            trayElement.classList.add("col-4");
+            boardElement.classList.add("col-8");
+        }
+        else {
+            playArea.classList.remove("row");
+            trayElement.classList.remove("col-4");
+            boardElement.classList.remove("col-8");
+        }
+    }, 100);
+}
+
+window.addEventListener('resize', adjustLayout);
 
 const adjacency = {0 : [1,3], 1 : [0,2], 2 : [1,5], 3 : [0,6], 5 : [2,8], 6 : [3,7], 7 : [6,8], 8 : [5,7]}
 const threes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[2,4,6],[0,4,8]];
