@@ -24,6 +24,7 @@
 }
 
 gameArea {
+    width: 100vw;
     user-select: none;
     display: flex;
     flex-direction: column;
@@ -43,7 +44,7 @@ board {
 
 header {
     display: flex;
-    width: 100%;
+    width: 100vw;
     justify-content: space-evenly;
 }
 
@@ -63,8 +64,8 @@ score {
     align-self: center;
     align-items: center;
     justify-content: center;
-    width: 6vw;
-    height: 6vw;
+    width: var(--trayCircleWidth);
+    height: var(--trayCircleWidth);
     border-radius: 50%;
 }
 
@@ -126,12 +127,12 @@ board > div, #tray > div {
     position: absolute;
     /* left: calc((var(--boardCircleHeight) + var(--boardCircleWidth)) / 2 - 0.5vh); */
     left: calc(1.65vh + 1.65vw);
-    top: -61vw;
+    top: -50vw;
     width: calc(0.5vh + 0.5vw);
-    height: 67vw;
+    height: 55vw;
     background-color: darkgoldenrod;
     background: linear-gradient(to right,gold 0%, darkgoldenrod 20%, darkgoldenrod 80%, gold 100%);
-    z-index: 1;
+    z-index: -1;
 }
 
 li:nth-child(2n) {
@@ -227,11 +228,30 @@ player2 {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr 1fr;
     }
+    #slot6::before, #slot7::before, #slot8::before {
+        height: 50vh;
+        top: -43vh;
+    }
+    /* Horizontal connector lines */
+    #slot0::after,#slot3::after,#slot6::after {
+        width: 42vw;
+    }
 }
 
 /* Layout for portrait views and taller screens */
 @media (max-aspect-ratio: 8/10) {
     board {
         height: 80vw;
+    }
+}
+
+/* Layour for squarish screens */
+@media (max-aspect-ratio: 10/10) and (min-aspect-ratio: 8/10) {
+    board {
+        height: 60vh;
+    }
+    #slot6::before, #slot7::before, #slot8::before {
+        height: 40vh;
+        top: -35vh;
     }
 }

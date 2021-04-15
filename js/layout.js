@@ -3,12 +3,13 @@ let tray = document.getElementById('tray');
 let board = document.getElementById('board');
 
 document.addEventListener('DOMContentLoaded', function() {
-    getWindowWidth();
+    adjustLayout();
 }, false);
 
-function getWindowWidth() {
+function adjustLayout() {
     let windowWidth = window.innerWidth;
     let windowHeight = window.innerHeight;
+    board = document.getElementById('board');
     setTimeout(function(){
         if (windowWidth / windowHeight > 1) {
             playArea.classList.add("row");
@@ -23,4 +24,4 @@ function getWindowWidth() {
     }, 100);
 }
 
-window.addEventListener('resize', getWindowWidth);
+window.addEventListener('resize', adjustLayout);
