@@ -19,12 +19,15 @@
     --trayCircleWidth: calc(2vw + 20px);
 }
 
-* {
-    border: 1px solid darkolivegreen;
+body {
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 gameArea {
-    width: 100vw;
+    width: 100%;
     user-select: none;
     display: flex;
     flex-direction: column;
@@ -40,12 +43,17 @@ board {
     linear-gradient(to top right, rgb(255, 255, 255) 15%, transparent 15%, transparent 85%, rgb(255, 255, 255) 85%),
     linear-gradient(to top right, rgba(255,255,255,0) 49.3%, darkgoldenrod 49.5%, darkgoldenrod 50.5%, rgba(255,255,255,0) 50.7%),
     linear-gradient(to bottom right, rgba(255,255,255,0) 49.3%, darkgoldenrod 49.5%, darkgoldenrod 50.5%, rgba(255,255,255,0) 50.7%);
+    border: 1px solid darkolivegreen;
 }
 
 header {
     display: flex;
-    width: 100vw;
     justify-content: space-evenly;
+    border-bottom: 1px solid darkolivegreen;
+}
+
+#phase {
+    border-bottom: 1px solid darkolivegreen;
 }
 
 h1 {
@@ -67,10 +75,15 @@ score {
     width: var(--trayCircleWidth);
     height: var(--trayCircleWidth);
     border-radius: 50%;
+    border: 1px solid darkolivegreen;
 }
 
 #info {
     display: none;
+}
+
+#playArea {
+    width: 100%;
 }
 
 #tray {
@@ -81,6 +94,8 @@ score {
     padding: 5px 0;
     align-items: center;
     justify-items: center;
+    border: 1px solid darkolivegreen;
+    border-left: none;
 }
 
 board > div, #tray > div {
@@ -142,83 +157,7 @@ li:nth-child(2n-1) {
     font-style: italic;
 }
 
-leftHeader {
-    grid-area: leftHeader;
-}
-
-header {
-    grid-area: header;
-}
-
-rightHeader {
-    grid-area: rightHeader;
-}
-
-left {
-    grid-area: leftPanel;
-}
-
-board {
-    grid-area: board;
-}
-
-right {
-    grid-area: rightPanel;
-}
-
-leftFooter {
-    font-weight: 600;
-    grid-area: leftFooter;
-}
-
-footer {
-    grid-area: footer;
-}
-
-rightFooter {
-    grid-area: rightFooter;
-    display: flex;
-    flex-wrap: wrap;
-    flex-basis: 50%;
-}
-
-rightFooter > header {
-    flex-basis: 100%;
-}
-
-rightFooter > player1, rightFooter > player2 {
-    display: flex;
-    flex-wrap: wrap;
-    flex-basis: 50%;
-    flex-direction: column;
-    font-weight: 600;
-}
-
-leftHeader {
-    grid-area: leftHeader;
-    display: flex;
-    flex-wrap: wrap;
-    flex-basis: 50%;
-}
-
-leftHeader > header {
-    flex-basis: 100%;
-}
-
-leftHeader > player1, leftHeader > player2 {
-    display: flex;
-    flex-wrap: wrap;
-    flex-basis: 50%;
-    flex-direction: column;
-    font-weight: 600;
-}
-
-player1 {
-    color: darkslateblue;
-}
-player2 {
-    color: darkred;
-}
+/*  */
 
 
 /* Layout for landscape views and wider screens */
@@ -226,6 +165,8 @@ player2 {
     #tray{
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr 1fr;
+        row-gap: none;
+        padding: 0;
     }
     #slot6::before, #slot7::before, #slot8::before {
         height: 50vh;
