@@ -8,9 +8,9 @@ boardChipArr = boardElement.getElementsByTagName("div");
 infoPanel = document.getElementById('info');
 phasePanel = document.getElementById('phase');
 
+/* Layout controller */
 let playArea = document.getElementById('playArea');
 
-/* Layout controller */
 document.addEventListener('DOMContentLoaded', function() {
     adjustLayout();
 }, false);
@@ -34,6 +34,7 @@ function adjustLayout() {
 }
 
 window.addEventListener('resize', adjustLayout);
+/* End Layout controller */
 
 const adjacency = {0 : [1,3], 1 : [0,2], 2 : [1,5], 3 : [0,6], 5 : [2,8], 6 : [3,7], 7 : [6,8], 8 : [5,7]}
 const threes = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[2,4,6],[0,4,8]];
