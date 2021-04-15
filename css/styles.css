@@ -84,6 +84,9 @@ score {
 }
 
 board > div, #tray > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
     color: var(--unselect);
     border-radius: 50%;
@@ -94,10 +97,6 @@ board > div, #tray > div {
     width: var(--trayCircleWidth);
     height: var(--trayCircleWidth);
     font-size: calc(var(--trayCircleWidth)/2);
-    display: flex;
-    align-self: center;
-    align-items: center;
-    justify-content: center;
 }
 
 #slot1, #slot2, #slot3, #slot4, #slot5, #slot6, #slot7, #slot8, #slot0 {
