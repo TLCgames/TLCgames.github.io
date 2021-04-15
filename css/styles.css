@@ -34,7 +34,7 @@ board {
     display: grid;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
     height: 70vh;
-    width: 70vw;
+    /* width: 70vw; */
     background: linear-gradient(to bottom right, rgb(255, 255, 255) 15%, transparent 15%, transparent 85%, rgb(255, 255, 255) 85%),
     linear-gradient(to top right, rgb(255, 255, 255) 15%, transparent 15%, transparent 85%, rgb(255, 255, 255) 85%),
     linear-gradient(to top right, rgba(255,255,255,0) 49.3%, darkgoldenrod 49.5%, darkgoldenrod 50.5%, rgba(255,255,255,0) 50.7%),
@@ -51,6 +51,11 @@ h1 {
     display: flex;
     flex-direction: column;
     margin: 1px;
+    font-size: 3vh;
+}
+
+h1 > span {
+    font-size: 2.5vh;
 }
 
 score {
@@ -61,6 +66,10 @@ score {
     width: 6vw;
     height: 6vw;
     border-radius: 50%;
+}
+
+#info {
+    display: none;
 }
 
 #tray {
@@ -213,11 +222,16 @@ player2 {
 
 
 /* Layout for landscape views and wider screens */
-@media (min-aspect-ratio: 5/3) {
-
+@media (min-aspect-ratio: 2001/2000) {
+    #tray{
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+    }
 }
 
 /* Layout for portrait views and taller screens */
-@media (max-aspect-ratio: 3/5) {
-
+@media (max-aspect-ratio: 8/10) {
+    board {
+        height: 80vw;
+    }
 }
