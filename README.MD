@@ -10,8 +10,9 @@ __Latest updates__
 
 __Overall plan__
 1. Require selecting a combination after each move.
-2. Improve visuals, colors, and add sounds.
-3. Add AI and/or multiplayer.
+2. Improve visuals and add sounds.
+3. Tutorial.
+4. AI and/or multiplayer.
 
 __To do list__
 * Dropdown relations menu
