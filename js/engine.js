@@ -57,6 +57,7 @@ let chipData = [];
 let lastSelected = -1;
 let trayChips = [];
 let boardChips = {};
+let comboList = [];
 // lastMove records the last chip value and last position of that chip so it isn't moved back
 let lastMove = [0,0];
 // Create chip data constructor
@@ -132,7 +133,6 @@ class Chip{
                 board.testPoint(boardPosition);
             }
             board.testWin();
-            console.log(bonus);
             // After point is added, update html with turn info if nobody won
             if(activePlayer < 3){
                 // If a bonus move was earned and it isn't their 3rd move in a row
@@ -196,8 +196,6 @@ class Board{
     validMove(slot){
         if(this.values[slot] == 0){
             // Check if it's a repeat move
-            console.log([chipData[activeChip].value,slot]);
-            console.log(lastMove);
             if(chipData[activeChip].value == lastMove[0] && slot == lastMove[1]){
                 infoPanel.innerHTML = `You can't move a piece back to its previous slot in bonus moves!`;
                 return false;
@@ -233,11 +231,16 @@ class Board{
             var valMap = set.map(pos => this.values[pos]).sort();
             // If all 3 are player controlled, check for a match
             if(valMap.includes(0) == false){
+                // Check for sum (eg 1 + 2 = 3)
                 if(valMap[0] + valMap[1] == valMap[2]){
+                    comboList.push(0);
                     pointEarned = true;
                 }
+                var comboCounter = 0;
                 groups.forEach(function(testArr){
+                    comboCounter += 1;
                     if(valMap.every(value => testArr.includes(value))){
+                        comboList.push(comboCounter);
                         pointEarned = true;
                     }
                 })
@@ -254,6 +257,7 @@ class Board{
             bonus += 1;
             score[activePlayer-1] += 1;
             document.getElementById(activePlayer).innerHTML = score[activePlayer-1];
+            comboActive();
             return true;
         }
     }
@@ -423,7 +427,6 @@ function initPhaseThree(){
 }
 
 function win(player){
-    console.log('test');
     score[player-1] += 3;
     if(phase == 2){
         infoPanel.innerHTML = `Player ${player} won by matching 3 in a row!`;
@@ -450,6 +453,11 @@ function passBonus(){
     activePlayer = 3 - activePlayer;
     bonus = 0;
     infoPanel.innerHTML = `Player ${activePlayer}'s turn.`;
+}
+
+function comboActive(){
+    console.log(comboList);
+    comboList = [];
 }
 
 // Allow start button activation
